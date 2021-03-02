@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Welcome, {{ user.username }}!</h1>
+    {% for environment in environments %}
+    <div>
+        <p>{{ environment.environment.name }} contains server: <b>{{ environment.servers }}</b></p>
+    </div>
+    {% endfor %}
+{% endblock %}
