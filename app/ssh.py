@@ -1,3 +1,7 @@
+# Paramiko is a third part library which has been imported in order to leverage functionality
+# which deals with the SHH connection
+# Paramiko, 2021. Paramiko [3rd Party Python Library]. Documentation available
+#   from: http://www.paramiko.org/ [Accessed 22 Match 2021]
 import paramiko
 import os
 
