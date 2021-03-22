@@ -1,10 +1,5 @@
 {% extends "navigation.html" %}
 
 {% block app_content %}
-    <h1>Welcome, {{ user.username }}!</h1>
-    {% for environment in environments %}
-    <div>
-        <p>{{ environment.name }} contains server: <b>{{ environment.servers }}</b></p>
-    </div>
-    {% endfor %}
+    <h1>Welcome, {{ current_user.username }}!</h1>
 {% endblock %}
