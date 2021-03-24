@@ -1,11 +1,9 @@
-from app import app
-from app import db
-from app.forms import LoginForm
+from app import app, db
+from app.views import LoginForm, RegistrationForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Environment, Server, Command
 from werkzeug.urls import url_parse
-from app.forms import RegistrationForm
 
 
 @app.route('/login', methods=['GET', 'POST'])
