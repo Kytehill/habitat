@@ -3,13 +3,29 @@
 {% block app_content %}
     <h1>User: {{ user.username }}</h1>
     <hr>
-    {% for environment in environments %}
-            <p> Environment Name: {{ environment.name }}</b></p>
-            <p> Environment Status: {{ environment.env_status }}</b></p>
-            <p> Environment Status updated:{{ environment.status_timestamp }}</b></p>
-            <p> Environment Approval Status: {{ environment.approval_status }}</b></p>
-            <p> Environment Approval Timestamp: {{ environment.approval_timestamp }}</b></p>
-            <p> Environment Timing: {{ environment.timing }}</b></p>
-            <p><a href="{{ url_for('servers', env_id= environment.id ) }}">Servers</a></p>
-    {% endfor %}
+    <table style="width:100%">
+        <tr>
+            <th>Environment Name</th>
+            <th>Environment Status</th>
+            <th>Environment Timing</th>
+            <th>Environment Approval Status</th>
+            <th>Environment Status</th>
+        </tr>
+        {% for environment in environments %}
+        <tr>
+            <td>{{ environment.name }}</td>
+            <td>{{ environment.env_status }}</td>
+            <td>{{ environment.timing }}</td>
+            <td>{{ environment.approval_status }}</td>
+            {% if environment.env_status == 2 %}
+                <td style="background-color:green">PASS</td>
+            {% elif environment.env_status == 1 %}
+                <td style="background-color:orange">INVESTIGATION ONGOING</td>
+            {% else %}
+                <td style="background-color:red">FAIL</td>
+            {% endif %}
+            <td><a href="{{ url_for('servers', env_id= environment.id ) }}">Servers</a></td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
