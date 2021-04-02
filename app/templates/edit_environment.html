@@ -1,0 +1,30 @@
+{% extends "navigation.html" %}
+
+{% block content %}
+    <h1>Edit Environment</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}<br>
+            {% for error in form.name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.timing.label }}<br>
+            {{ form.timing }}<br>
+            {% for error in form.timing.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.servers.label }}<br>
+            {{ form.servers }}<br>
+            {% for error in form.servers.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

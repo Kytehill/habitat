@@ -14,14 +14,14 @@ class Ssh:
     # Class updates db to pass/fail dependent on result
     def execute_commands(self, ip, username):
         # self.get_servers()
+        print(username)
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         key_file = os.path.expanduser('~/.ssh/id_rsa')
         privatekeyfile = paramiko.RSAKey.from_private_key_file(key_file)
-        ssh.connect(hostname="192.168.1.30", username="pi", pkey=privatekeyfile)
-        stdin, stdout, stderr = ssh.exec_command("lscpu")
+        ssh.connect(hostname=ip, username=username, pkey=privatekeyfile)
+        stdin, stdout, stderr = ssh.exec_command("lscpu | grep \"Model name:\"")
         lines = stdout.readlines()
-        # print(lines)
         for line in lines:
             final_line = line.strip('\n')
             print(final_line)

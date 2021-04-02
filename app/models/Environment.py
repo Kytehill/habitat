@@ -14,7 +14,7 @@ class Environment(db.Model):
     servers = db.relationship('Server', backref='server_in_env', lazy='dynamic')
 
     def __repr__(self):
-        environment = '{id: ' + self.id + 'name: ' + self.name + ',' + 'env_status: ' + str(self.env_status) + ',' + 'status_timestamp: ' \
+        environment = '{id: ' + str(self.id) + 'name: ' + self.name + ',' + 'env_status: ' + str(self.env_status) + ',' + 'status_timestamp: ' \
                       + str(self.status_timestamp) + ',' + 'approval_status: ' + str(self.approval_status) + ',' + \
                       'approval_timestamp: ' + str(self.approval_timestamp) + ',' + 'timing: ' + str(self.timing) + '}'
         return environment

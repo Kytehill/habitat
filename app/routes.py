@@ -1,5 +1,5 @@
 from app import app, db
-from app.views import LoginForm, RegistrationForm
+from app.views import LoginForm, RegistrationForm, EditEnvironmentForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Environment, Server, Command
@@ -82,3 +82,23 @@ def commands(server_id):
     print(server_id)
     commands = Command.query.filter_by(server_id_fk=server_id).all()
     return render_template('commands.html', commands=commands)
+
+
+@app.route('/edit_environment/<env_id>', methods=['GET', 'POST'])
+@login_required
+def edit_environment(env_id):
+    form = EditEnvironmentForm()
+    environment = Environment.query.filter_by(id=env_id).first()
+    servers_in_env = Server.query.filter_by(env_id_fk=env_id).all()
+    if form.validate_on_submit():
+        environment.name = form.name.data
+        environment.timing = form.timing.data
+        servers_in_env = form.servers.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('edit_environment', env_id=env_id))
+    elif request.method == 'GET':
+        form.name.data = environment.name
+        form.timing.data = environment.timing
+        form.servers.data = servers_in_env
+        return render_template('edit_environment.html', title='Edit Environment', form=form)
