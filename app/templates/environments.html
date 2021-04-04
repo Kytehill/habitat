@@ -3,6 +3,25 @@
 {% block app_content %}
     <h1>User: {{ user.username }}</h1>
     <hr>
+    <h1>Add Environment</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}<br>
+            {% for error in form.name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.timing.label }}<br>
+            {{ form.timing(size=64) }}<br>
+            {% for error in form.timing.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
     <table style="width:100%">
         <tr>
             <th>Environment Name</th>

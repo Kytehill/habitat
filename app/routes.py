@@ -1,5 +1,5 @@
 from app import app, db
-from app.views import LoginForm, RegistrationForm, EditEnvironmentForm
+from app.views import LoginForm, RegistrationForm, EditEnvironmentForm, AddEnvironmentForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Environment, Server, Command
@@ -60,12 +60,18 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route('/environments/<id>')
+@app.route('/environments/<id>', methods=["GET", "POST"])
 @login_required
 def environments(id):
     user = User.query.filter_by(id=id).first_or_404()
     environments = Environment.query.filter_by(user_id_fk=id).all()
-    return render_template('environments.html', user=user, environments=environments)
+    form = AddEnvironmentForm()
+    if request.form:
+        environment = Environment(name=form.name.data, timing=form.timing.data, user_id_fk=id)
+        db.session.add(environment)
+        db.session.commit()
+        redirect(url_for('environments', id=id))
+    return render_template('environments.html', user=user, environments=environments, form=form)
 
 
 @app.route('/servers/<env_id>')
@@ -82,6 +88,16 @@ def commands(server_id):
     print(server_id)
     commands = Command.query.filter_by(server_id_fk=server_id).all()
     return render_template('commands.html', commands=commands)
+
+
+# @app.route("/add_environment", methods=["GET", "POST"])
+# def add_environment():
+#     form = AddEnvironmentForm()
+#     if request.form:
+#         environment = Environment(name=form.name.data, timing=form.timing.data)
+#         db.session.add(environment)
+#         db.session.commit()
+#     return render_template("environment.html", form=form)
 
 
 @app.route('/edit_environment/<env_id>', methods=['GET', 'POST'])
