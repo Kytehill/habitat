@@ -3,6 +3,8 @@ import os
 from app import db
 from app.models import User, Environment, Server, Command
 import time, threading, sched
+from time import time, sleep
+from datetime import datetime
 
 
 class Ssh:
@@ -25,6 +27,8 @@ class Ssh:
         for line in lines:
             final_line = line.strip('\n')
             print(final_line)
+            print("Current Time =", datetime.now().strftime("%H:%M:%S"))
+        threading.Timer(30, self.execute_commands, args=(ip, username)).start()
 
     def get_servers(self, env_id):
         servers = Server.query.filter_by(env_id_fk=env_id).all()
@@ -42,11 +46,11 @@ class Ssh:
         thread_list = []
         for ip, username in final_servers.items():
             t = threading.Thread(target=self.execute_commands, args=(ip, username))
+            # t = threading.Timer(5.0, self.execute_commands, args=(ip, username))
             t.start()
             thread_list.append(t)
             for thread in thread_list:
                 thread.join()
-
 
 ssh = Ssh()
 ssh.multithread(4)
