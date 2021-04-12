@@ -76,12 +76,13 @@ def environments(id):
     return render_template('environments.html', user=user, environments=environments, servers=servers, form=form)
 
 
-@app.route('/servers/<env_id>')
+@app.route('/servers/<env_id_fk>')
 @login_required
-def servers(env_id):
-    print(env_id)
-    servers = Server.query.filter_by(env_id_fk=env_id).all()
-    return render_template('servers.html', servers=servers)
+def servers(env_id_fk):
+    environment = Environment.query.filter_by(id=env_id_fk).first()
+    user = current_user
+    servers = Server.query.filter_by(env_id_fk=env_id_fk).all()
+    return render_template('servers.html', servers=servers, user=user, environment=environment)
 
 
 @app.route('/commands/<server_id>')
@@ -90,6 +91,7 @@ def commands(server_id):
     print(server_id)
     commands = Command.query.filter_by(server_id_fk=server_id).all()
     return render_template('commands.html', commands=commands)
+
 
 @app.route('/edit_environment/<env_id>', methods=['GET', 'POST'])
 @login_required
