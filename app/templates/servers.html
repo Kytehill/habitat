@@ -1,9 +1,29 @@
 {% extends "navigation.html" %}
 
 {% block app_content %}
-<h1>User: {{ user.username }}</h1>
-<hr>
 <h1>Servers in {{ environment.name }}</h1>
+<table class="table" style="width:100%">
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <tr>
+    <td class="form-group">
+        {{ form.ip_address.label }}<br>
+        {{ form.ip_address(size=32) }}<br>
+        {% for error in form.ip_address.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </td>
+    <td class="form-group">
+        {{ form.username.label }}<br>
+        {{ form.username(size=64) }}<br>
+        {% for error in form.username.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </td>
+    </tr>
+    <tr><td class="form-group">{{ form.submit() }}</td><td></td></tr>
+</form>
+</table>
 <table style="width:100%" class="table">
     <tr>
         <th>Server IP</th>

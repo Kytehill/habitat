@@ -1,5 +1,5 @@
 from app import app, db
-from app.views import LoginForm, RegistrationForm, EnvironmentForm
+from app.views import LoginForm, RegistrationForm, EnvironmentForm, ServerForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Environment, Server, Command
@@ -68,21 +68,28 @@ def environments(id):
     environment_id = environments[0].__dict__["id"]
     servers = Server.query.filter_by(env_id_fk=environment_id).all()
     form = EnvironmentForm()
-    if request.form:
+    if form.validate_on_submit():
         environment = Environment(name=form.name.data, timing=form.timing.data, user_id_fk=id)
         db.session.add(environment)
         db.session.commit()
-        redirect(url_for('environments', id=id))
+        flash('Congratulations, your environment has been added!')
+        return redirect(url_for('environments', id=id))
     return render_template('environments.html', user=user, environments=environments, servers=servers, form=form)
 
 
-@app.route('/servers/<env_id_fk>')
+@app.route('/servers/<env_id_fk>', methods=["GET", "POST"])
 @login_required
 def servers(env_id_fk):
     environment = Environment.query.filter_by(id=env_id_fk).first()
     user = current_user
     servers = Server.query.filter_by(env_id_fk=env_id_fk).all()
-    return render_template('servers.html', servers=servers, user=user, environment=environment)
+    form = ServerForm()
+    if form.validate_on_submit():
+        server = Server(ip_address=form.ip_address.data, username=form.username.data, env_id_fk=env_id_fk)
+        db.session.add(server)
+        db.session.commit()
+        return redirect(url_for('servers', env_id_fk=env_id_fk))
+    return render_template('servers.html', servers=servers, user=user, environment=environment, form=form)
 
 
 @app.route('/commands/<server_id>')
@@ -116,5 +123,5 @@ def delete_environment(env_id):
     environment = Environment.query.filter_by(id=env_id).first()
     db.session.delete(environment)
     db.session.commit()
-    flash('Environment has been successfully deleted')
+    flash('Environment ' + environment.name + ' has been successfully deleted')
     return redirect(url_for('environments', id=current_user.id))
