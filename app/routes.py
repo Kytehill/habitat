@@ -70,9 +70,7 @@ def environments(id):
     form = EnvironmentForm()
     if request.form:
         environment = Environment(name=form.name.data, timing=form.timing.data, user_id_fk=id)
-        servers_in_env = Server(env_id_fk=environment.id, ip_address=form.server_ip.data, username=form.server_username.data)
         db.session.add(environment)
-        db.session.add(servers_in_env)
         db.session.commit()
         redirect(url_for('environments', id=id))
     return render_template('environments.html', user=user, environments=environments, servers=servers, form=form)
