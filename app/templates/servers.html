@@ -1,10 +1,27 @@
 {% extends "navigation.html" %}
 
 {% block app_content %}
-    <h1>Servers</h1>
-    <hr>
+<h1>User: {{ user.username }}</h1>
+<hr>
+<h1>Servers in {{ environment.name }}</h1>
+<table style="width:100%" class="table">
+    <tr>
+        <th>Server IP</th>
+        <th>Server Username</th>
+        <th>Server Status</th>
+    </tr>
     {% for server in servers %}
-            <p> {{ server }}</b></p>
-            <p><a href="{{ url_for('commands', server_id= server.id ) }}">Commands</a></p>
+    <tr>
+        <td>{{ server.ip_address }}</td>
+        <td>{{ server.username }}</td>
+        {% if server.server_status == 2 %}
+        <td style="background-color:green">PASS</td>
+        {% elif server.server_status == 1 %}
+        <td style="background-color:orange">INVESTIGATION ONGOING</td>
+        {% else %}
+        <td style="background-color:red">FAIL</td>
+        {% endif %}
+    </tr>
     {% endfor %}
+</table>
 {% endblock %}

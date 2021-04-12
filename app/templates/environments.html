@@ -22,13 +22,16 @@
     </p>
     <p>{{ form.submit() }}</p>
 </form>
-<table style="width:100%">
+<table class="table" style="width:100%">
     <tr>
         <th>Environment Name</th>
         <th>Environment Status</th>
         <th>Environment Timing</th>
         <th>Environment Approval Status</th>
         <th>Environment Status</th>
+        <th></th>
+        <th></th>
+        <th></th>
     </tr>
     {% for environment in environments %}
     <tr>
@@ -45,18 +48,7 @@
         {% endif %}
         <td><a href="{{ url_for('edit_environment', env_id= environment.id ) }}">Edit Environment</a></td>
         <td><a href="{{ url_for('delete_environment', env_id= environment.id ) }}">Delete Environment</a></td>
-    </tr>
-    {% for server in servers %}
-    {% if environment.id == server.env_id_fk %}
-    <tr>
-        <td>{{ server.ip_address }}</td>
-        <td>{{ server.username }}</td>
-        <td><a href="{{ url_for('servers', env_id=environment.id ) }}">Edit Server</a></td>
-    </tr>
-    {% endif %}
-    {% endfor %}
-    <tr>
-        <td><a href="{{ url_for('servers', env_id= environment.id ) }}">Add Servers</a></td>
+        <td><a href="{{ url_for('servers', env_id_fk= environment.id ) }}">Servers in {{ environment.name }}</a></td>
     </tr>
     {% endfor %}
 </table>
