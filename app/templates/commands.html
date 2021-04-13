@@ -4,6 +4,28 @@
 <h2>Server IP:  {{ server.ip_address }}</h2>
 <h2>Server Username: {{ server.username }}</h2>
 <hr>
+<table class="table" style="width:100%">
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <tr>
+    <td class="form-group">
+        {{ form.command.label }}<br>
+        {{ form.command(size=32) }}<br>
+        {% for error in form.command.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </td>
+    <td class="form-group">
+        {{ form.expectation.label }}<br>
+        {{ form.expectation(size=64) }}<br>
+        {% for error in form.expectation.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </td>
+    </tr>
+    <tr><td class="form-group">{{ form.submit() }}</td><td></td></tr>
+</form>
+</table>
 <table style="width:100%" class="table">
     <tr>
         <th>Command</th>

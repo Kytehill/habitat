@@ -6,7 +6,7 @@ class Command(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     command = db.Column(db.String(200), index=True)
     expectation = db.Column(db.String(200), index=True)
-    command_status = db.Column(db.Integer, index=True)
+    command_status = db.Column(db.Integer, index=True, default=1)
     status_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))
     approval_status = (db.Column(db.Integer, index=True))
     approval_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))

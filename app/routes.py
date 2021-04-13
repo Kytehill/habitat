@@ -1,5 +1,5 @@
 from app import app, db
-from app.views import LoginForm, RegistrationForm, EnvironmentForm, ServerForm
+from app.views import LoginForm, RegistrationForm, EnvironmentForm, ServerForm, CommandForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Environment, Server, Command
@@ -146,9 +146,15 @@ def edit_server(environment_id, server_id):
         return render_template('edit_server.html', title='Edit Server', form=form)
 
 
-@app.route('/commands/<server_id>')
+@app.route('/commands/<server_id>', methods=["GET", "POST"])
 @login_required
 def commands(server_id):
     commands = Command.query.filter_by(server_id_fk=server_id).all()
     server = Server.query.filter_by(id=server_id).first()
-    return render_template('commands.html', commands=commands, server=server)
+    form = CommandForm()
+    if form.validate_on_submit():
+        command = Command(command=form.command.data, expectation=form.expectation.data, server_id_fk=server_id)
+        db.session.add(command)
+        db.session.commit()
+        return redirect(url_for('commands', server_id=server_id))
+    return render_template('commands.html', commands=commands, server=server, form=form)
