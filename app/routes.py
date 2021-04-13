@@ -158,3 +158,13 @@ def commands(server_id):
         db.session.commit()
         return redirect(url_for('commands', server_id=server_id))
     return render_template('commands.html', commands=commands, server=server, form=form)
+
+
+@app.route('/delete_command/<server_id>/<command_id>')
+@login_required
+def delete_command(server_id, command_id):
+    command = Command.query.filter_by(id=command_id).first()
+    db.session.delete(command)
+    db.session.commit()
+    flash('Command ' + command.command + ' has been successfully deleted')
+    return redirect(url_for('commands', server_id=server_id, id=command_id))
