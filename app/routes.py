@@ -129,6 +129,23 @@ def delete_server(environment_id, server_id):
     return redirect(url_for('servers', env_id_fk=environment_id, id=server_id))
 
 
+@app.route('/edit_server/<environment_id>/<server_id>', methods=['GET', 'POST'])
+@login_required
+def edit_server(environment_id, server_id):
+    form = ServerForm()
+    server = Server.query.filter_by(id=server_id).first()
+    if form.validate_on_submit():
+        server.ip_address = form.ip_address.data
+        server.username = form.username.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('servers', env_id_fk=environment_id))
+    elif request.method == 'GET':
+        form.ip_address.data = server.ip_address
+        form.username.data = server.username
+        return render_template('edit_server.html', title='Edit Server', form=form)
+
+
 @app.route('/commands/<server_id>')
 @login_required
 def commands(server_id):
