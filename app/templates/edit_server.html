@@ -1,0 +1,23 @@
+{% extends "navigation.html" %}
+
+{% block content %}
+<h1>Edit Server</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.ip_address.label }}<br>
+        {{ form.ip_address(size=32) }}<br>
+        {% for error in form.ip_address.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.username.label }}<br>
+        {{ form.username }}<br>
+        {% for error in form.username.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}
