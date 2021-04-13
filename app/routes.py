@@ -149,6 +149,6 @@ def edit_server(environment_id, server_id):
 @app.route('/commands/<server_id>')
 @login_required
 def commands(server_id):
-    print(server_id)
     commands = Command.query.filter_by(server_id_fk=server_id).all()
-    return render_template('commands.html', commands=commands)
+    server = Server.query.filter_by(id=server_id).first()
+    return render_template('commands.html', commands=commands, server=server)

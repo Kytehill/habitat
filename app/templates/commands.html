@@ -1,9 +1,29 @@
 {% extends "navigation.html" %}
 
 {% block app_content %}
-    <h1>Commands</h1>
-    <hr>
+<h2>Server IP:  {{ server.ip_address }}</h2>
+<h2>Server Username: {{ server.username }}</h2>
+<hr>
+<table style="width:100%" class="table">
+    <tr>
+        <th>Command</th>
+        <th>Expected Output</th>
+        <th>Command Status</th>
+        <th></th>
+        <th></th>
+    </tr>
     {% for command in commands %}
-            <p> {{ command }}</b></p>
+    <tr>
+        <td>{{ command.command }}</td>
+        <td>{{ command.expectation }}</td>
+        {% if command.command_status == 2 %}
+        <td style="background-color:green">PASS</td>
+        {% elif command.command_status == 1 %}
+        <td style="background-color:orange">INVESTIGATION ONGOING</td>
+        {% else %}
+        <td style="background-color:red">FAIL</td>
+        {% endif %}
+    </tr>
     {% endfor %}
+</table>
 {% endblock %}
