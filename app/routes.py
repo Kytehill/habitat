@@ -168,3 +168,20 @@ def delete_command(server_id, command_id):
     db.session.commit()
     flash('Command ' + command.command + ' has been successfully deleted')
     return redirect(url_for('commands', server_id=server_id, id=command_id))
+
+
+@app.route('/edit_command/<server_id>/<command_id>', methods=['GET', 'POST'])
+@login_required
+def edit_command(server_id, command_id):
+    form = CommandForm()
+    command = Command.query.filter_by(id=command_id).first()
+    if form.validate_on_submit():
+        command.command = form.command.data
+        command.expectation = form.expectation.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('commands', server_id=server_id))
+    elif request.method == 'GET':
+        form.command.data = command.command
+        form.expectation.data = command.expectation
+        return render_template('edit_command.html', title='Edit Command', form=form)
