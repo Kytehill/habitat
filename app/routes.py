@@ -6,6 +6,13 @@ from app.models import User, Environment, Server, Command
 from werkzeug.urls import url_parse
 
 
+@app.route('/')
+@app.route('/index')
+@login_required
+def index():
+    return render_template('index.html', title='Home')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """
@@ -36,13 +43,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-@app.route('/')
-@app.route('/index')
-@login_required
-def index():
-    return render_template('index.html', title='Home')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -77,29 +77,6 @@ def environments(id):
     return render_template('environments.html', user=user, environments=environments, servers=servers, form=form)
 
 
-@app.route('/servers/<env_id_fk>', methods=["GET", "POST"])
-@login_required
-def servers(env_id_fk):
-    environment = Environment.query.filter_by(id=env_id_fk).first()
-    user = current_user
-    servers = Server.query.filter_by(env_id_fk=env_id_fk).all()
-    form = ServerForm()
-    if form.validate_on_submit():
-        server = Server(ip_address=form.ip_address.data, username=form.username.data, env_id_fk=env_id_fk)
-        db.session.add(server)
-        db.session.commit()
-        return redirect(url_for('servers', env_id_fk=env_id_fk))
-    return render_template('servers.html', servers=servers, user=user, environment=environment, form=form)
-
-
-@app.route('/commands/<server_id>')
-@login_required
-def commands(server_id):
-    print(server_id)
-    commands = Command.query.filter_by(server_id_fk=server_id).all()
-    return render_template('commands.html', commands=commands)
-
-
 @app.route('/edit_environment/<env_id>', methods=['GET', 'POST'])
 @login_required
 def edit_environment(env_id):
@@ -125,3 +102,36 @@ def delete_environment(env_id):
     db.session.commit()
     flash('Environment ' + environment.name + ' has been successfully deleted')
     return redirect(url_for('environments', id=current_user.id))
+
+
+@app.route('/servers/<env_id_fk>', methods=["GET", "POST"])
+@login_required
+def servers(env_id_fk):
+    environment = Environment.query.filter_by(id=env_id_fk).first()
+    user = current_user
+    servers = Server.query.filter_by(env_id_fk=env_id_fk).all()
+    form = ServerForm()
+    if form.validate_on_submit():
+        server = Server(ip_address=form.ip_address.data, username=form.username.data, env_id_fk=env_id_fk)
+        db.session.add(server)
+        db.session.commit()
+        return redirect(url_for('servers', env_id_fk=env_id_fk))
+    return render_template('servers.html', servers=servers, user=user, environment=environment, form=form)
+
+
+@app.route('/delete_server/<environment_id>/<server_id>')
+@login_required
+def delete_server(environment_id, server_id):
+    server = Server.query.filter_by(id=server_id).first()
+    db.session.delete(server)
+    db.session.commit()
+    flash('Server with username: ' + server.username + ' has been successfully deleted')
+    return redirect(url_for('servers', env_id_fk=environment_id, id=server_id))
+
+
+@app.route('/commands/<server_id>')
+@login_required
+def commands(server_id):
+    print(server_id)
+    commands = Command.query.filter_by(server_id_fk=server_id).all()
+    return render_template('commands.html', commands=commands)

@@ -41,6 +41,7 @@
         {% else %}
         <td style="background-color:red">FAIL</td>
         {% endif %}
+        <td><a href="{{ url_for('delete_server', environment_id= environment.id, server_id= server.id ) }}">Delete Server</a></td>
     </tr>
     {% endfor %}
 </table>
