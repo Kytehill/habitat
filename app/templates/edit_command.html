@@ -1,0 +1,23 @@
+{% extends "navigation.html" %}
+
+{% block content %}
+<h1>Edit Command</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.command.label }}<br>
+        {{ form.command(size=32) }}<br>
+        {% for error in form.command.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.expectation.label }}<br>
+        {{ form.expectation }}<br>
+        {% for error in form.expectation.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}
