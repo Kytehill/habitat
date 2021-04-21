@@ -1,4 +1,5 @@
 import paramiko
+import logging
 import os
 from app import db
 from app.models import User, Environment, Server, Command
@@ -9,11 +10,13 @@ from datetime import datetime
 
 class Ssh:
 
-    # dictionary of server_hostname and username
-    # commands
-    # timing
-    # compare live against expectation
-    # Class updates db to pass/fail dependent on result
+    # Establish Connection
+    # Create thread
+    # Execute commands
+    # Kill thread
+    # Wait for required time
+    # Repeat
+
     def execute_commands(self, ip, username, env_id):
         servers = self.get_servers(env_id)
         timing = self.get_timing(env_id)
@@ -26,10 +29,10 @@ class Ssh:
         lines = stdout.readlines()
         for line in lines:
             final_line = line.strip('\n')
-            print(final_line)
             for server in servers:
                 self.compare(server.id, final_line)
-            print("Current Time =", datetime.now().strftime("%H:%M:%S"))
+                print("Comparison")
+                print(datetime.now())
         threading.Timer(timing, self.execute_commands, args=(ip, username, env_id)).start()
 
     def get_servers(self, env_id):
@@ -41,8 +44,6 @@ class Ssh:
         timing = int(timing_query.__dict__['timing'])
         return timing
 
-    # def check_expectation(self):
-
     def multithread(self, env_id):
         final_servers = {}
         servers = self.get_servers(env_id)
@@ -50,19 +51,22 @@ class Ssh:
             ip_address = server.__dict__["ip_address"]
             username = server.__dict__["username"]
             final_servers.update({ip_address: username})
-        thread_list = []
+        thread_list = list()
         for ip, username in final_servers.items():
+            print("Main    : create and start thread %d.", ip)
             t = threading.Thread(target=self.execute_commands, args=(ip, username, env_id))
-            t.start()
             thread_list.append(t)
-            for thread in thread_list:
-                thread.join()
+            t.start()
+        for index, thread in enumerate(thread_list):
+            print("Main    : before joining thread %d.", index)
+            print(thread)
+            thread.join()
+            print("Main    : thread %d done", ip)
 
     def compare(self, server_id, live_output):
         command_query = Command.query.filter_by(server_id_fk=server_id).all()
         for command in command_query:
             expected_output = command.expectation
-            print(expected_output)
             if expected_output == live_output:
                 command.command_status = 2
                 db.session.commit()
@@ -71,6 +75,6 @@ class Ssh:
                 db.session.commit()
 
 ssh = Ssh()
-# ssh.multithread(4)
-ssh.compare(1, 'blah')
+ssh.multithread(5)
+# ssh.compare(1, 'blah')
 
