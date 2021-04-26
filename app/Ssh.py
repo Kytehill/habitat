@@ -1,56 +1,84 @@
 import paramiko
-import os
 from app import db
-from app.models import User, Environment, Server, Command
-import time, threading, sched
-from time import time, sleep
+import os
+from app.models import Environment, Server, Command
+import time, threading
 from datetime import datetime
 
+# Create thread
+# Open Connection for Ip Address
+# Run all commands for that server
+# Compare all outputs and qrite to DB
+# Kill thread
+# Wait for required time
+# Repeat
 
-class Ssh:
-
-    # dictionary of server_hostname and username
-    # commands
-    # timing
-    # compare live against expectation
-    # Class updates db to pass/fail dependent on result
-    def execute_commands(self, ip, username):
-        # self.get_servers()
-        print(username)
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        key_file = os.path.expanduser('~/.ssh/id_rsa')
-        privatekeyfile = paramiko.RSAKey.from_private_key_file(key_file)
-        ssh.connect(hostname=ip, username=username, pkey=privatekeyfile)
-        stdin, stdout, stderr = ssh.exec_command("lscpu | grep \"Model name:\"")
-        lines = stdout.readlines()
-        for line in lines:
+def execute_commands(environment, server, commands):
+    # servers = self.get_servers(env_id)
+    # timing = self.get_timing(env_id)
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    key_file = os.path.expanduser('~/.ssh/id_rsa')
+    privatekeyfile = paramiko.RSAKey.from_private_key_file(key_file)
+    ssh.connect(hostname=server.ip_address, username=server.username, pkey=privatekeyfile)
+    print('Connected ' + server.ip_address)
+    print(datetime.now())
+    for command in commands:
+        stdin, stdout, stderr = ssh.exec_command(command.command)
+        output = stdout.readlines()
+        for line in output:
             final_line = line.strip('\n')
-            print(final_line)
-            print("Current Time =", datetime.now().strftime("%H:%M:%S"))
-        threading.Timer(30, self.execute_commands, args=(ip, username)).start()
+            compare(command.id, command.expectation, final_line)
+        # threading.Timer(timing, self.execute_commands, args=(ip, username, env_id)).start()
 
-    def get_servers(self, env_id):
-        servers = Server.query.filter_by(env_id_fk=env_id).all()
-        return servers
+def get_servers(env_id):
+    servers = Server.query.filter_by(env_id_fk=env_id).all()
+    return servers
 
-    # def check_expectation(self):
+def get_timing(env_id):
+    timing_query = Environment.query.filter_by(id=env_id).first()
+    timing = int(timing_query.__dict__['timing'])
+    return timing
 
-    def multithread(self, env_id):
-        final_servers = {}
-        servers = self.get_servers(env_id)
-        for server in servers:
-            ip_address = server.__dict__["ip_address"]
-            username = server.__dict__["username"]
-            final_servers.update({ip_address: username})
-        thread_list = []
-        for ip, username in final_servers.items():
-            t = threading.Thread(target=self.execute_commands, args=(ip, username))
-            # t = threading.Timer(5.0, self.execute_commands, args=(ip, username))
-            t.start()
-            thread_list.append(t)
-            for thread in thread_list:
-                thread.join()
+def multithread():
+    thread_list = list()
+    environments = Environment.query.all()
+    event = threading.Event
+    while True:
+        for environment in environments:
+            servers = get_servers(environment.id)
+            for server in servers:
+                commands = Command.query.filter_by(server_id_fk=server.id).all()
+                # time.sleep(int(environment.timing))
+                # t = threading.Thread(target=self.execute_commands, args=(environment, server, commands))
+                print(environment.name)
+                print(environment.timing)
+                t = threading.Timer(int(environment.timing), execute_commands, args=(environment, server, commands))
+                # time.sleep(int(environment.timing))
+                t.start()
+                thread_list.append(t)
+                # print("Thread for " + server.ip_address + " started")
+                # print(t)
+        for index, thread in enumerate(thread_list):
+            # print(index)
+            # print(thread)
+            thread.join()
+        print("All threads Finished")
 
-ssh = Ssh()
-ssh.multithread(4)
+
+def compare(command_id, expectation, live_output):
+    command = Command.query.filter_by(id=command_id).first()
+    if expectation == live_output:
+        command.command_status = 2
+        db.session.commit()
+    else:
+        command.command_status = 0
+        db.session.commit()
+
+
+def main():
+    multithread()
+
+
+if __name__ == "__main__":
+    main()
