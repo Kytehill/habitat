@@ -41,12 +41,14 @@
         <td>{{ environment.env_status }}</td>
         <td>{{ environment.timing }}</td>
         <td>{{ environment.approval_status }}</td>
-        {% if environment.env_status == 2 %}
-        <td style="background-color:green">PASS</td>
+        {% if environment.environment_status == 3 %}
+        <td style="border: 3px solid orange">FAILURE OCCURED AT {TIME}</td>
+        {% elif environment.env_status == 2 %}
+        <td style="border: 3px solid green">PASS</td>
         {% elif environment.env_status == 1 %}
-        <td style="background-color:orange">INVESTIGATION ONGOING</td>
-        {% else %}
-        <td style="background-color:red">FAIL</td>
+        <td style="border: 3px solid blue">INVESTIGATION ONGOING</td>
+        {% elif environment.env_status == 0 %}
+        <td style="border: 3px solid red">FAIL</td>
         {% endif %}
         <td><a href="{{ url_for('edit_environment', env_id= environment.id ) }}">Edit Environment</a></td>
         <td><a href="{{ url_for('delete_environment', env_id= environment.id ) }}">Delete Environment</a></td>
