@@ -1,9 +1,12 @@
 import paramiko
+from paramiko import BadHostKeyException, AuthenticationException, SSHException
+import socket
 from app import db
 import os
 from app.models import Environment, Server, Command
-import time, threading
+import threading
 from datetime import datetime
+
 
 # Create thread
 # Open Connection for Ip Address
@@ -20,25 +23,42 @@ def execute_commands(environment, server, commands):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     key_file = os.path.expanduser('~/.ssh/id_rsa')
     privatekeyfile = paramiko.RSAKey.from_private_key_file(key_file)
-    ssh.connect(hostname=server.ip_address, username=server.username, pkey=privatekeyfile)
-    print('Connected ' + server.ip_address)
-    print(datetime.now())
-    for command in commands:
-        stdin, stdout, stderr = ssh.exec_command(command.command)
-        output = stdout.readlines()
-        for line in output:
-            final_line = line.strip('\n')
-            compare(command.id, command.expectation, final_line)
-        # threading.Timer(timing, self.execute_commands, args=(ip, username, env_id)).start()
+
+    try:
+        ssh.connect(hostname=server.ip_address, username=server.username, pkey=privatekeyfile)
+        server.connection_status = 0
+        print("Updating to connection status of " + str(server.connection_status) + " for" + server.ip_address)
+        db.session.commit()
+        print('Connected ' + server.ip_address)
+        print(datetime.now())
+        for command in commands:
+            stdin, stdout, stderr = ssh.exec_command(command.command)
+            output = stdout.readlines()
+            for line in output:
+                final_line = line.strip('\n')
+                compare(command.id, command.expectation, final_line)
+    except (BadHostKeyException, AuthenticationException,
+            SSHException, socket.error) as e:
+        print(e)
+        print('There is an issue with the connection in server: ' + server.ip_address)
+        print('Please ensure SSH Keys are set up and connection is live')
+        print(server.ip_address + " " + str(server.connection_status))
+        server.connection_status = 1
+        print(server.ip_address + " " + str(server.connection_status))
+        print("Updating to connection status of " + str(server.connection_status) + " for" + server.ip_address)
+        db.session.commit()
+
 
 def get_servers(env_id):
     servers = Server.query.filter_by(env_id_fk=env_id).all()
     return servers
 
+
 def get_timing(env_id):
     timing_query = Environment.query.filter_by(id=env_id).first()
     timing = int(timing_query.__dict__['timing'])
     return timing
+
 
 def multithread():
     thread_list = list()
@@ -55,6 +75,7 @@ def multithread():
                 print(environment.timing)
                 t = threading.Timer(int(environment.timing), execute_commands, args=(environment, server, commands))
                 # time.sleep(int(environment.timing))
+                t.daemon = True
                 t.start()
                 thread_list.append(t)
                 # print("Thread for " + server.ip_address + " started")
@@ -76,9 +97,12 @@ def compare(command_id, expectation, live_output):
         db.session.commit()
 
 
-def main():
-    multithread()
+# def stop_validation():
+#     sys._exit('Exited')
 
-
-if __name__ == "__main__":
-    main()
+# def main():
+#     multithread()
+#
+#
+# if __name__ == "__main__":
+#     main()
