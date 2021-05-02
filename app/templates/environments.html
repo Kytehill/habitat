@@ -24,12 +24,11 @@
     <tr><td class="form-group">{{ form.submit() }}</td><td></td></tr>
 </form>
 </table>
-<table class="table" style="width:100%">
+<table class="table" style="border-collapse: separate; border-spacing: 1px; width:100%;">
     <tr>
         <th>Environment Name</th>
         <th>Environment Timing</th>
         <th>Environment Status</th>
-        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -38,7 +37,7 @@
     </tr>
     {% for environment in environments %}
     <tr>
-        <td>{{ environment.name }}</td>
+        <td><a href="{{ url_for('servers', env_id_fk= environment.id ) }}">{{ environment.name }}</a></td>
         <td>{{ environment.timing }}</td>
         {% if environment.environment_status == 3 %}
         <td style="border: 3px solid orange">FAILURE OCCURED AT {TIME}</td>
@@ -52,7 +51,6 @@
         <td><a href="{{ url_for('run_environment', env_id= environment.id ) }}">Run</a></td>
         <td><a href="{{ url_for('edit_environment', env_id= environment.id ) }}">Edit Environment</a></td>
         <td><a href="{{ url_for('delete_environment', env_id= environment.id ) }}">Delete Environment</a></td>
-        <td><a href="{{ url_for('servers', env_id_fk= environment.id ) }}">Servers in {{ environment.name }}</a></td>
         {% if environment.connection_status == 1 %}
         <td style="border: 3px solid red" align="center"/>
         <img src="{{url_for('static', filename='error.png')}}" width="25" height="25" align="center">

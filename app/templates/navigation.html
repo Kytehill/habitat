@@ -3,9 +3,6 @@
 {% block title %} Habitat {% endblock %}
 
 {% block navbar %}
-    {% block scripts %}
-        <script type = "text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
-    {% endblock scripts %}
     <nav class="navbar navbar-dark">
          <a class="navbar-brand" href="{{ url_for('index') }}">
              <img src="{{url_for('static', filename='logo.png')}}" width="75" height="25" class="d-inline-block align-top" alt="">
