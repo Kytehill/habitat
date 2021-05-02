@@ -27,20 +27,19 @@
 <table class="table" style="width:100%">
     <tr>
         <th>Environment Name</th>
-        <th>Environment Status</th>
         <th>Environment Timing</th>
-        <th>Environment Approval Status</th>
         <th>Environment Status</th>
         <th></th>
         <th></th>
         <th></th>
+        <th></th>
+        <th>Connection Status on last run</th>
+        <th>Last Run Date/Time</th>
     </tr>
     {% for environment in environments %}
     <tr>
         <td>{{ environment.name }}</td>
-        <td>{{ environment.env_status }}</td>
         <td>{{ environment.timing }}</td>
-        <td>{{ environment.approval_status }}</td>
         {% if environment.environment_status == 3 %}
         <td style="border: 3px solid orange">FAILURE OCCURED AT {TIME}</td>
         {% elif environment.env_status == 2 %}
@@ -50,9 +49,24 @@
         {% elif environment.env_status == 0 %}
         <td style="border: 3px solid red">FAIL</td>
         {% endif %}
+        <td><a href="{{ url_for('run_environment', env_id= environment.id ) }}">Run</a></td>
         <td><a href="{{ url_for('edit_environment', env_id= environment.id ) }}">Edit Environment</a></td>
         <td><a href="{{ url_for('delete_environment', env_id= environment.id ) }}">Delete Environment</a></td>
         <td><a href="{{ url_for('servers', env_id_fk= environment.id ) }}">Servers in {{ environment.name }}</a></td>
+        {% if environment.connection_status == 1 %}
+        <td style="border: 3px solid red" align="center"/>
+        <img src="{{url_for('static', filename='error.png')}}" width="25" height="25" align="center">
+        </td>
+        {% elif environment.connection_status == 2 %}
+        <td style="border: 3px solid orange" align="center"/>
+        <img src="{{url_for('static', filename='pass.png')}}" width="25" height="25" align="center">
+        </td>
+        {% elif environment.connection_status == 0 %}
+        <td style="border: 3px solid green" align="center"/>
+        <img src="{{url_for('static', filename='pass.png')}}" width="25" height="25">
+        </td>
+        {% endif %}
+        <td>{{environment.status_timestamp}}</td>
     </tr>
     {% endfor %}
 </table>

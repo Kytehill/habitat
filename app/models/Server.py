@@ -10,6 +10,7 @@ class Server(db.Model):
     status_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))
     approval_status = (db.Column(db.Integer, index=True))
     approval_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))
+    connection_status = (db.Column(db.Integer))
     env_id_fk = db.Column(db.Integer, db.ForeignKey('environment.id'))
     servers = db.relationship('Command', backref='command_in_server', lazy='dynamic')
 

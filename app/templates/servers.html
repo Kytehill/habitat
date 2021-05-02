@@ -31,6 +31,9 @@
         <th>Server Status</th>
         <th></th>
         <th></th>
+        <th></th>
+        <th>Connection Status on Last Run</th>
+        <th>Last Run Date/Time</th>
     </tr>
     {% for server in servers %}
     <tr>
@@ -48,6 +51,16 @@
         <td><a href="{{ url_for('edit_server', environment_id= environment.id, server_id= server.id ) }}">Edit Server</a></td>
         <td><a href="{{ url_for('delete_server', environment_id= environment.id, server_id= server.id ) }}">Delete Server</a></td>
         <td><a href="{{ url_for('commands', environment_id= environment.id, server_id= server.id ) }}">Commands Running on this Server</a></td>
+        {% if server.connection_status == 1 %}
+        <td style="border: 3px solid red" align="center"/>
+        <img src="{{url_for('static', filename='error.png')}}" width="25" height="25" align="center">
+        </td>
+        {% else %}
+        <td style="border: 3px solid green" align="center"/>
+        <img src="{{url_for('static', filename='pass.png')}}" width="25" height="25">
+        </td>
+        {% endif %}
+        <td>{{ server.status_timestamp }}</td>
     </tr>
     {% endfor %}
 </table>

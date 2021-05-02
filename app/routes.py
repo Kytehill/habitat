@@ -1,4 +1,4 @@
-from app import app, db
+from app import app, db, run_environment_ssh
 from app.views import LoginForm, RegistrationForm, EnvironmentForm, ServerForm, CommandForm
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
@@ -185,3 +185,29 @@ def edit_command(server_id, command_id):
         form.command.data = command.command
         form.expectation.data = command.expectation
         return render_template('edit_command.html', title='Edit Command', form=form)
+
+
+# @app.route('/start_validation')
+# @login_required
+# def start_validation():
+#     Ssh.multithread()
+#     return redirect(url_for('environments', id=current_user.id))
+
+
+@app.route('/run_environment/<env_id>')
+@login_required
+def run_environment(env_id):
+    environment = Environment.query.filter_by(id=env_id).first()
+    servers = Server.query.filter_by(env_id_fk=env_id).all()
+    run_environment_ssh.execute_commands(servers, environment)
+    return redirect(url_for('environments', id=current_user.id))
+
+
+@app.route('/run_all_environments')
+@login_required
+def run_all_environments():
+    environments = Environment.query.filter_by(user_id_fk=current_user.id)
+    for environment in environments:
+        servers = Server.query.filter_by(env_id_fk=environment.id).all()
+        run_environment_ssh.execute_commands(servers, environment)
+    return redirect(url_for('environments', id=current_user.id))
