@@ -4,6 +4,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Environment, Server, Command
 from werkzeug.urls import url_parse
+from datetime import datetime
 
 
 @app.route('/')
@@ -199,6 +200,8 @@ def edit_command(server_id, command_id):
 def run_environment(env_id):
     environment = Environment.query.filter_by(id=env_id).first()
     servers = Server.query.filter_by(env_id_fk=env_id).all()
+    environment.status_timestamp = datetime.now()
+    db.session.commit()
     run_environment_ssh.execute_commands(servers, environment)
     return redirect(url_for('environments', id=current_user.id))
 
@@ -208,6 +211,8 @@ def run_environment(env_id):
 def run_all_environments():
     environments = Environment.query.filter_by(user_id_fk=current_user.id)
     for environment in environments:
+        environment.status_timestamp = datetime.now()
+        db.session.commit()
         servers = Server.query.filter_by(env_id_fk=environment.id).all()
         run_environment_ssh.execute_commands(servers, environment)
     return redirect(url_for('environments', id=current_user.id))

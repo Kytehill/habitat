@@ -17,7 +17,6 @@ def execute_commands(servers, environment):
         commands = Command.query.filter_by(server_id_fk=server.id).all()
         try:
             ssh.connect(hostname=server.ip_address, username=server.username, pkey=privatekeyfile)
-            environment.status_timestamp = datetime.now()
             server.connection_status = 0
             server.status_timestamp = datetime.now()
             db.session.commit()
@@ -28,7 +27,7 @@ def execute_commands(servers, environment):
             server.status_timestamp = datetime.now()
             db.session.commit()
             flash('Connection not established on Server: ' + server.ip_address + ' in  Environment: ' + environment.name)
-    update_server_status(server, commands)
+        update_server_status(server, commands)
     update_environment_status(environment, servers)
     update_connection_status(environment, servers)
 
@@ -55,16 +54,19 @@ def compare(command_id, expectation, live_output):
 
 def update_environment_status(environment, servers):
     failing_servers = []
-    for server in servers:
-        if server.server_status == 0:
-            failing_servers.append(server.ip_address)
-    if len(failing_servers) > 0:
+    if servers:
+        for server in servers:
+            if server.server_status == 0:
+                failing_servers.append(server.ip_address)
+        if len(failing_servers) > 0:
+            environment.env_status = 0
+            db.session.commit()
+        else:
+            environment.env_status = 1
+            db.session.commit()
+    else:
         environment.env_status = 0
         db.session.commit()
-    else:
-        environment.env_status = 1
-        db.session.commit()
-
 
 def update_server_status(server, commands):
     failing_commands = []
@@ -81,17 +83,18 @@ def update_server_status(server, commands):
 
 def update_connection_status(environment, servers):
     failed_connections = []
-    for server in servers:
-        if server.connection_status == 1:
-            failed_connections.append(server.ip_address)
-    print(failed_connections)
-    if len(failed_connections) > 0:
-        environment.connection_status = 1
-        db.session.commit()
+    if servers:
+        for server in servers:
+            if server.connection_status == 1:
+                failed_connections.append(server.ip_address)
+        if len(failed_connections) > 0:
+            environment.connection_status = 1
+            db.session.commit()
+        else:
+            environment.connection_status = 0
+            db.session.commit()
     else:
-        print(environment.connection_status)
-        environment.connection_status = 0
-        print(environment.connection_status)
+        environment.connection_status = 1
         db.session.commit()
 
 

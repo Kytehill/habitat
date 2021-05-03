@@ -15,13 +15,12 @@
     </td>
     <td class="form-group">
         {{ form.timing.label }}<br>
-        {{ form.timing(size=64) }}<br>
+        {{ form.timing(size=64) }}<br><br>
+        {{ form.submit() }}
         {% for error in form.timing.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </td>
-    </tr>
-    <tr><td class="form-group">{{ form.submit() }}</td><td></td></tr>
 </form>
 </table>
 <table class="table" style="border-collapse: separate; border-spacing: 1px; width:100%;">
