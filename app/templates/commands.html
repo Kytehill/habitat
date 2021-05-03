@@ -26,7 +26,7 @@
     <tr><td class="form-group">{{ form.submit() }}</td><td></td></tr>
 </form>
 </table>
-<table style="width:100%" class="table">
+<table style="border-collapse: separate; border-spacing: 1px; width:100%;" class="table">
     <tr>
         <th>Command</th>
         <th>Expected Output</th>
@@ -44,7 +44,7 @@
         {% elif command.command_status == 2 %}
         <td style="border: 3px solid green">PASS</td>
         {% elif command.command_status == 1 %}
-        <td style="border: 3px solid blue">INVESTIGATION ONGOING</td>
+        <td style="border: 3px solid red">NEW COMMAND</td>
         {% elif command.command_status == 0 %}
         <td style="border: 3px solid red">FAIL</td>
         {% endif %}
