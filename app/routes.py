@@ -99,7 +99,13 @@ def edit_environment(env_id):
 @login_required
 def delete_environment(env_id):
     environment = Environment.query.filter_by(id=env_id).first()
+    servers = Server.query.filter_by(env_id_fk=env_id).all()
     db.session.delete(environment)
+    for server in servers:
+        commands = Command.query.filter_by(server_id_fk=server.id)
+        for command in commands:
+            db.session.delete(command)
+        db.session.delete(server)
     db.session.commit()
     flash('Environment ' + environment.name + ' has been successfully deleted')
     return redirect(url_for('environments', id=current_user.id))
@@ -124,6 +130,9 @@ def servers(env_id_fk):
 @login_required
 def delete_server(environment_id, server_id):
     server = Server.query.filter_by(id=server_id).first()
+    commands = Command.query.filter_by(server_id_fk=server.id).all()
+    for command in commands:
+        db.session.delete(command)
     db.session.delete(server)
     db.session.commit()
     flash('Server with username: ' + server.username + ' has been successfully deleted')
