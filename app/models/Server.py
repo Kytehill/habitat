@@ -7,10 +7,10 @@ class Server(db.Model):
     ip_address = db.Column(db.String(20), index=True)
     username = db.Column(db.String(64))
     server_status = db.Column(db.Integer, index=True, default=1)
-    status_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))
+    status_timestamp = (db.Column(db.DateTime, index=True, default=None))
     approval_status = (db.Column(db.Integer, index=True))
-    approval_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))
-    connection_status = (db.Column(db.Integer))
+    approval_timestamp = (db.Column(db.DateTime, index=True, default=datetime.now()))
+    connection_status = (db.Column(db.Integer, default=1))
     env_id_fk = db.Column(db.Integer, db.ForeignKey('environment.id'))
     servers = db.relationship('Command', backref='command_in_server', lazy='dynamic')
 
