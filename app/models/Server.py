@@ -6,7 +6,7 @@ class Server(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.String(20), index=True)
     username = db.Column(db.String(64))
-    server_status = db.Column(db.Integer, index=True)
+    server_status = db.Column(db.Integer, index=True, default=1)
     status_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))
     approval_status = (db.Column(db.Integer, index=True))
     approval_timestamp = (db.Column(db.DateTime, index=True, default=datetime.utcnow))
