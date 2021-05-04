@@ -1,9 +1,15 @@
 {% extends "navigation.html" %}
 
 {% block app_content %}
-<h2>Server IP:  {{ server.ip_address }}</h2>
-<h2>Server Username: {{ server.username }}</h2>
-<hr>
+<table style="width:100%">
+<tr>
+    <td><h1>Commands Running on Server:</h1></td>
+</tr>
+<tr>
+    <td><h2>Server IP:  {{ server.ip_address }}</h2></td>
+    <td><h2>Server Username: {{ server.username }}</h2></td>
+</tr>
+</table>
 <table class="table" style="width:100%">
 <form action="" method="post">
     {{ form.hidden_tag() }}
@@ -17,20 +23,21 @@
     </td>
     <td class="form-group">
         {{ form.expectation.label }}<br>
-        {{ form.expectation(size=64) }}<br>
+        {{ form.expectation(size=64) }}<br><br>
+        {{ form.submit() }}
         {% for error in form.expectation.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </td>
     </tr>
-    <tr><td class="form-group">{{ form.submit() }}</td><td></td></tr>
 </form>
 </table>
-<table style="width:100%" class="table">
+<table style="border-collapse: separate; border-spacing: 1px; width:100%;" class="table">
     <tr>
         <th>Command</th>
         <th>Expected Output</th>
         <th>Command Status</th>
+        <th>Last Execution</th>
         <th></th>
         <th></th>
     </tr>
@@ -43,10 +50,11 @@
         {% elif command.command_status == 2 %}
         <td style="border: 3px solid green">PASS</td>
         {% elif command.command_status == 1 %}
-        <td style="border: 3px solid blue">INVESTIGATION ONGOING</td>
+        <td style="border: 3px solid blue">NEW COMMAND</td>
         {% elif command.command_status == 0 %}
         <td style="border: 3px solid red">FAIL</td>
         {% endif %}
+        <td>{{ command.status_timestamp }}</td>
         <td><a href="{{ url_for('edit_command', server_id= server.id, command_id= command.id ) }}">Edit Command</a></td>
         <td><a href="{{ url_for('delete_command', server_id= server.id, command_id=command.id) }}">Delete Command</a></td>
     </tr>

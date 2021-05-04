@@ -3,8 +3,7 @@ from paramiko import BadHostKeyException, AuthenticationException, SSHException
 import socket
 from app import db
 import os
-from app.models import Environment, Server, Command
-import threading
+from app.models import Environment, Command
 from datetime import datetime
 from flask import flash
 
@@ -18,30 +17,29 @@ def execute_commands(servers, environment):
         commands = Command.query.filter_by(server_id_fk=server.id).all()
         try:
             ssh.connect(hostname=server.ip_address, username=server.username, pkey=privatekeyfile)
-            # environment.connection_status = 0
-            environment.status_timestamp = datetime.now()
             server.connection_status = 0
             server.status_timestamp = datetime.now()
             db.session.commit()
-            for command in commands:
-                print(command)
-                stdin, stdout, stderr = ssh.exec_command(command.command)
-                output = stdout.readlines()
-                print(output)
-                for line in output:
-                    final_line = line.strip('\n')
-                    print(command.id)
-                    print(command.expectation)
-                    print(final_line)
-                    compare(command.id, command.expectation, final_line)
+            run_commands(commands, ssh)
         except (BadHostKeyException, AuthenticationException,
                 SSHException, socket.error) as e:
             server.connection_status = 1
             server.status_timestamp = datetime.now()
             db.session.commit()
             flash('Connection not established on Server: ' + server.ip_address + ' in  Environment: ' + environment.name)
-    check_server_status(server, commands)
-    check_environment_status(environment, servers)
+        update_server_status(server, commands)
+    update_environment_status(environment, servers)
+    update_connection_status(environment, servers)
+
+
+def run_commands(commands, ssh):
+    for command in commands:
+        stdin, stdout, stderr = ssh.exec_command(command.command)
+        command.status_timestamp = datetime.now()
+        output = stdout.readlines()
+        for line in output:
+            final_line = line.strip('\n')
+            compare(command.id, command.expectation, final_line)
 
 
 def compare(command_id, expectation, live_output):
@@ -54,20 +52,23 @@ def compare(command_id, expectation, live_output):
         db.session.commit()
 
 
-def check_environment_status(environment, servers):
+def update_environment_status(environment, servers):
     failing_servers = []
-    for server in servers:
-        if server.server_status == 0:
-            failing_servers.append(server.ip_address)
-    if len(failing_servers) > 0:
-        environment.connection_status = 1
-        db.session.commit()
+    if servers:
+        for server in servers:
+            if server.server_status == 0:
+                failing_servers.append(server.ip_address)
+        if len(failing_servers) > 0:
+            environment.env_status = 0
+            db.session.commit()
+        else:
+            environment.env_status = 1
+            db.session.commit()
     else:
         environment.env_status = 0
         db.session.commit()
 
-
-def check_server_status(server, commands):
+def update_server_status(server, commands):
     failing_commands = []
     for command in commands:
         if command.command_status == 0:
@@ -78,3 +79,22 @@ def check_server_status(server, commands):
     else:
         server.server_status = 2
         db.session.commit()
+
+
+def update_connection_status(environment, servers):
+    failed_connections = []
+    if servers:
+        for server in servers:
+            if server.connection_status == 1:
+                failed_connections.append(server.ip_address)
+        if len(failed_connections) > 0:
+            environment.connection_status = 1
+            db.session.commit()
+        else:
+            environment.connection_status = 0
+            db.session.commit()
+    else:
+        environment.connection_status = 1
+        db.session.commit()
+
+
