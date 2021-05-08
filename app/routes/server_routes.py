@@ -47,4 +47,4 @@ def edit_server(environment_id, server_id):
     elif request.method == 'GET':
         form.ip_address.data = server.ip_address
         form.username.data = server.username
-        return render_template('edit_server.html', title='Edit Server', form=form)
+    return render_template('edit_server.html', title='Edit Server', form=form)
