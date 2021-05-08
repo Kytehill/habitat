@@ -43,4 +43,4 @@ def edit_command(server_id, command_id):
     elif request.method == 'GET':
         form.command.data = command.command
         form.expectation.data = command.expectation
-        return render_template('edit_command.html', title='Edit Command', form=form)
+    return render_template('edit_command.html', title='Edit Command', form=form)
