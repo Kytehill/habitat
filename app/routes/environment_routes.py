@@ -34,7 +34,7 @@ def edit_environment(env_id):
     elif request.method == 'GET':
         form.name.data = environment.name
         form.timing.data = environment.timing
-        return render_template('edit_environment.html', title='Edit Environment', form=form)
+    return render_template('edit_environment.html', title='Edit Environment', form=form)
 
 
 @app.route('/delete_environment/<env_id>', methods=['GET','POST'])
