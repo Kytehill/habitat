@@ -10,8 +10,6 @@ from app.models import User, Environment, Server, Command
 def environments(id):
     user = User.query.filter_by(id=id).first_or_404()
     environments = Environment.query.filter_by(user_id_fk=id).all()
-    environment_id = environments[0].__dict__["id"]
-    servers = Server.query.filter_by(env_id_fk=environment_id).all()
     form = EnvironmentForm()
     if form.validate_on_submit():
         environment = Environment(name=form.name.data, timing=form.timing.data, user_id_fk=id)
@@ -19,7 +17,7 @@ def environments(id):
         db.session.commit()
         flash('Congratulations, your environment has been added!')
         return redirect(url_for('environments', id=id))
-    return render_template('environments.html', user=user, environments=environments, servers=servers, form=form)
+    return render_template('environments.html', user=user, environments=environments, form=form)
 
 
 @app.route('/edit_environment/<env_id>', methods=['GET', 'POST'])
