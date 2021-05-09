@@ -60,6 +60,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
+
 @app.route('/run_environment/<env_id>')
 @login_required
 def run_environment(env_id):
