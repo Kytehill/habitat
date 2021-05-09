@@ -3,6 +3,9 @@ from datetime import datetime
 
 
 class Environment(db.Model):
+    """
+    Model inherits db.Model from SQL Alchemy
+    """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), index=True, unique=True)
     env_status = db.Column(db.Integer, index=True, default=1)
@@ -15,6 +18,10 @@ class Environment(db.Model):
     servers = db.relationship('Server', backref='server_in_env', lazy='dynamic')
 
     def __repr__(self):
+        """
+        Defines how objects of this Class are printed
+        :return: environment as dictionary
+        """
         environment = '{id: ' + str(self.id) + 'name: ' + self.name + ',' + 'env_status: ' + str(self.env_status) + ',' + 'status_timestamp: ' \
                       + str(self.status_timestamp) + ',' + 'approval_status: ' + str(self.approval_status) + ',' + \
                       'approval_timestamp: ' + str(self.approval_timestamp) + ',' + 'timing: ' + str(self.timing) + 'connection_status: ' + str(self.connection_status) + '}'

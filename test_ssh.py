@@ -1,6 +1,10 @@
 import paramiko
 import os
 
+"""
+Module set up to test command execution
+"""
+
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 key_file = os.path.expanduser('~/.ssh/id_rsa')

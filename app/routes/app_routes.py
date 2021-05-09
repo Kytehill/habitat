@@ -11,6 +11,10 @@ from datetime import datetime
 @app.route('/index')
 @login_required
 def index():
+    """
+    Routing for index/ home page
+    :return: renders tamplate for index page with Home as title
+    """
     return render_template('index.html', title='Home')
 
 
@@ -42,12 +46,24 @@ def login():
 
 @app.route('/logout')
 def logout():
+    """
+    Routing for logout
+    :return: logs user out and redirects user to index page
+    """
     logout_user()
     return redirect(url_for('index'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    """
+     The code associated with Login/Register has been derived from a Flask tutorial
+     provided by Miguel Grinberg
+
+     Grinberg, M., 2017. The Flask Mega Tutorial [Online Programming Tutorial]. Available
+         from: https://miguelgrinberg.com/post/the-flask-mega-tutorial-part-v-user-logins
+         [Accessed 22 March 2021]
+     """
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegistrationForm()
@@ -64,6 +80,11 @@ def register():
 @app.route('/run_environment/<env_id>')
 @login_required
 def run_environment(env_id):
+    """
+    Run's commands in selected environment
+    :param env_id: ID of environment to be run
+    :return: redirects users to environments page
+    """
     environment = Environment.query.filter_by(id=env_id).first()
     servers = Server.query.filter_by(env_id_fk=env_id).all()
     environment.status_timestamp = datetime.now()
@@ -75,6 +96,10 @@ def run_environment(env_id):
 @app.route('/run_all_environments')
 @login_required
 def run_all_environments():
+    """
+    Runs all environments
+    :return: redirects user to environments
+    """
     environments = Environment.query.filter_by(user_id_fk=current_user.id)
     for environment in environments:
         environment.status_timestamp = datetime.now()

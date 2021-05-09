@@ -9,6 +9,11 @@ from flask import flash
 
 
 def execute_commands(servers, environment):
+    """
+    Executes commands for given servers in a given environment
+    :param servers: Servers on which commands to execute
+    :param environment: Environment where servers sit
+    """
     for server in servers:
         commands = Command.query.filter_by(server_id_fk=server.id).all()
         try:
@@ -28,6 +33,11 @@ def execute_commands(servers, environment):
 
 
 def run_commands(server, commands):
+    """
+    Runs commands via SSH on server
+    :param server: Target server for commands to be run
+    :param commands: Commands to be run on server
+    """
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     key_file = os.path.expanduser('~/.ssh/id_rsa')
@@ -53,6 +63,12 @@ def run_commands(server, commands):
 
 
 def compare(command_id, expectation, live_output):
+    """
+    Compare the expected output with the live output on server
+    :param command_id: ID for command
+    :param expectation: Expected output for command
+    :param live_output: Live ouput returned for command from server
+    """
     command = Command.query.filter_by(id=command_id).first()
     if expectation == live_output:
         command.command_status = 2
@@ -63,6 +79,11 @@ def compare(command_id, expectation, live_output):
 
 
 def update_environment_status(environment, servers):
+    """
+    Updates environment status based on status of servers sat within environment
+    :param environment: Environment
+    :param servers: Servers within environment
+    """
     failing_servers = []
     if servers:
         for server in servers:
@@ -80,6 +101,11 @@ def update_environment_status(environment, servers):
 
 
 def update_server_status(server, commands):
+    """
+    Updates server status based on status of commands sat on server
+    :param server: Server
+    :param commands: Commands sat on server
+    """
     failing_commands = []
     for command in commands:
         if command.command_status == 0 or command.command_status == 1:
@@ -93,6 +119,11 @@ def update_server_status(server, commands):
 
 
 def update_connection_status(environment, servers):
+    """
+    Updates connection status of environment based on servers sat in environment
+    :param environment: Environment
+    :param servers: Servers within environment
+    """
     failed_connections = []
     if servers:
         for server in servers:
