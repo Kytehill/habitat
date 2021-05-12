@@ -7,6 +7,13 @@ from app.models import Environment, Server, Command
 import threading
 from datetime import datetime
 
+"""
+This module was set up with a view to using a multithreaded approach to executing commands
+This module is not in use at the moment and will need to be executed as a separate long running 
+background process alongside the flask application
+
+This will form part of future work for the application 
+"""
 
 # Create thread
 # Open Connection for Ip Address

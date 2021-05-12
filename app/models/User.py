@@ -20,14 +20,32 @@ class User(UserMixin, db.Model):
     environments = db.relationship('Environment', backref='env_user', lazy='dynamic')
 
     def __repr__(self):
+        """
+        Defines how user object is printed
+        :return: Formatted User
+        """
         return '<User {}>'.format(self.username)
 
     def set_password(self, password):
+        """
+        Generates password hash
+        :param password: User password
+        :return: Hashed password
+        """
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """
+        Verfies hashed password
+        :param password: User password
+        :return: True if password match and false if no match
+        """
         return check_password_hash(self.password_hash, password)
 
     @login.user_loader
     def load_user(id):
+        """
+        Loads user based on user id
+        :return:User
+        """
         return User.query.get(int(id))

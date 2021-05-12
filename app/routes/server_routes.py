@@ -8,6 +8,11 @@ from app.models import Environment, Server, Command
 @app.route('/servers/<env_id_fk>', methods=["GET", "POST"])
 @login_required
 def servers(env_id_fk):
+    """
+    Loads or adds servers in specified environment
+    :param env_id_fk: Environment ID used as foreign key
+    :return: renders servers template
+    """
     environment = Environment.query.filter_by(id=env_id_fk).first()
     user = current_user
     servers = Server.query.filter_by(env_id_fk=env_id_fk).all()
@@ -23,6 +28,12 @@ def servers(env_id_fk):
 @app.route('/delete_server/<environment_id>/<server_id>')
 @login_required
 def delete_server(environment_id, server_id):
+    """
+    Deletes server from environment
+    :param environment_id: Environment ID
+    :param server_id: Server ID
+    :return: redirects to servers page
+    """
     server = Server.query.filter_by(id=server_id).first()
     commands = Command.query.filter_by(server_id_fk=server.id).all()
     for command in commands:
@@ -36,6 +47,12 @@ def delete_server(environment_id, server_id):
 @app.route('/edit_server/<environment_id>/<server_id>', methods=['GET', 'POST'])
 @login_required
 def edit_server(environment_id, server_id):
+    """
+    Edit server on environment
+    :param environment_id: Environment ID
+    :param server_id: Server ID
+    :return: render edit_server template or redirect to server page on form submission
+    """
     form = ServerForm()
     server = Server.query.filter_by(id=server_id).first()
     if form.validate_on_submit():

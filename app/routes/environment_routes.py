@@ -8,6 +8,11 @@ from app.models import User, Environment, Server, Command
 @app.route('/environments/<id>', methods=["GET", "POST"])
 @login_required
 def environments(id):
+    """
+    Load and adds Environments for a specified ID
+    :param id: Environment ID
+    :return: renders environments template
+    """
     user = User.query.filter_by(id=id).first_or_404()
     environments = Environment.query.filter_by(user_id_fk=id).all()
     form = EnvironmentForm()
@@ -23,6 +28,11 @@ def environments(id):
 @app.route('/edit_environment/<env_id>', methods=['GET', 'POST'])
 @login_required
 def edit_environment(env_id):
+    """
+    Edit specified environments
+    :param env_id: Environment ID
+    :return: Renders edit environment template, redirect to environments on form submission
+    """
     form = EnvironmentForm()
     environment = Environment.query.filter_by(id=env_id).first()
     if form.validate_on_submit():
@@ -40,6 +50,11 @@ def edit_environment(env_id):
 @app.route('/delete_environment/<env_id>', methods=['GET','POST'])
 @login_required
 def delete_environment(env_id):
+    """
+    Deletes environment based on ID
+    :param env_id: Environment ID
+    :return: Redirects to environments template
+    """
     environment = Environment.query.filter_by(id=env_id).first()
     servers = Server.query.filter_by(env_id_fk=env_id).all()
     db.session.delete(environment)

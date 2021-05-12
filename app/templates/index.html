@@ -1,5 +1,13 @@
 {% extends "navigation.html" %}
 
 {% block app_content %}
-    <h1>Welcome, {{ current_user.username }}!</h1>
+    <h1>Welcome to Habitat {{ current_user.username }}</h1>
+    <h2>Capabilities</h2>
+    <li>Execute Linux commands across multiple environments</li>
+    <li>Create environments with multiple servers</li>
+    <li>Identify unexpected configurations</li>
+    <h2>Prerequisites</h2>
+    <li>Habitat is aimed at Developers with Linux experience</li>
+    <li>SSH Keys must be set up manually between client and host devices before connection can be established</li>
+    <li>Future versions of the application will look to add SSH Key setup functionality</li>
 {% endblock %}

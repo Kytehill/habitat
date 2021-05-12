@@ -36,6 +36,7 @@
     <tr>
         <th>Command</th>
         <th>Expected Output</th>
+        <th>Actual Output</th>
         <th>Command Status</th>
         <th>Last Execution</th>
         <th></th>
@@ -45,6 +46,7 @@
     <tr>
         <td>{{ command.command }}</td>
         <td>{{ command.expectation }}</td>
+        <td>{{ command.actual_output }}</td>
         {% if command.command_status == 3 %}
         <td style="border: 3px solid orange">FAILURE OCCURED AT {TIME}</td>
         {% elif command.command_status == 2 %}
