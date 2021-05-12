@@ -20,8 +20,10 @@ class Command(db.Model):
         Defines how objects of this Class are printed
         :return: command as dictionary
         """
-        command = '{id: ' + str(self.id) + ',' + 'command: ' + self.command + ',' + 'expectation: ' + self.expectation + ',' \
-                  + 'actual_output: ' + str(self.actual_output) + ',' + 'command_status: ' \
-                 + str(self.command_status) + ',' + 'status_timestamp: ' + str(self.status_timestamp) + ',' + \
-                 'approval_status: ' + str(self.approval_status) + ',' + 'approval_timestamp: ' + str(self.approval_timestamp) + '}'
+        command = '{id: ' + str(
+            self.id) + ',' + 'command: ' + self.command + ',' + 'expectation: ' + self.expectation + ',' \
+            + 'actual_output: ' + str(self.actual_output) + ',' + 'command_status: ' \
+            + str(self.command_status) + ',' + 'status_timestamp: ' + str(self.status_timestamp) + ',' + \
+            'approval_status: ' + str(self.approval_status) + ',' + 'approval_timestamp: ' \
+            + str(self.approval_timestamp) + '}'
         return command

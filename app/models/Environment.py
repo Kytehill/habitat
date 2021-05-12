@@ -1,5 +1,4 @@
 from app import db
-from datetime import datetime
 
 
 class Environment(db.Model):
@@ -22,7 +21,9 @@ class Environment(db.Model):
         Defines how objects of this Class are printed
         :return: environment as dictionary
         """
-        environment = '{id: ' + str(self.id) + 'name: ' + self.name + ',' + 'env_status: ' + str(self.env_status) + ',' + 'status_timestamp: ' \
-                      + str(self.status_timestamp) + ',' + 'approval_status: ' + str(self.approval_status) + ',' + \
-                      'approval_timestamp: ' + str(self.approval_timestamp) + ',' + 'timing: ' + str(self.timing) + 'connection_status: ' + str(self.connection_status) + '}'
+        environment = '{id: ' + str(self.id) + 'name: ' + self.name + ',' + 'env_status: ' \
+                      + str(self.env_status) + ',' + 'status_timestamp: ' + str(self.status_timestamp) \
+                      + ',' + 'approval_status: ' + str(self.approval_status) + ',' + 'approval_timestamp: ' \
+                      + str(self.approval_timestamp) + ',' + 'timing: ' + str(self.timing) + 'connection_status: ' \
+                      + str(self.connection_status) + '}'
         return environment

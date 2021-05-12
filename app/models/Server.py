@@ -22,7 +22,8 @@ class Server(db.Model):
         Defines how objects of this Class are printed
         :return: Server as dictionary
         """
-        server = '{id: ' + str(self.id) + 'ip_address: ' + self.ip_address + ',' + 'username: ' + self.username + ',' + 'server_status: ' \
-                      + str(self.server_status) + ',' + 'status_timestamp: ' + str(self.status_timestamp) + ',' + \
-                      'approval_status: ' + str(self.approval_status) + ',' + 'approval_timestamp: ' + str(self.approval_timestamp)
+        server = '{id: ' + str(self.id) + 'ip_address: ' + self.ip_address + ',' + 'username: ' + self.username + ',' \
+                 + 'server_status: ' + str(self.server_status) + ',' + 'status_timestamp: ' \
+                 + str(self.status_timestamp) + ',' + 'approval_status: ' + str(self.approval_status) + ',' \
+                 + 'approval_timestamp: ' + str(self.approval_timestamp) + '}'
         return server
